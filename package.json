@@ -28,6 +28,16 @@
     "jsdom": "^25.0.1",
     "typescript": "^5.9.3",
     "vitest": "^2.1.8"
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.8",
+    "@types/node": "^20.17.0",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "@vitejs/plugin-react": "^4.7.0",
+    "jsdom": "^29.1.1",
+    "typescript": "^5.9.3",
+    "vitest": "^2.1.9"
   },
   "license": "MIT"
 }
