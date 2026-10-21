@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 import nav from '@/lib/nav.json';
+import { WalletButton } from './wallet/WalletButton';
 
 export function Header() {
   const pathname = usePathname();
@@ -31,6 +32,7 @@ export function Header() {
           <Link href="/contracts" className="btn btn-primary btn-sm" style={{ marginLeft: 8, color: 'var(--brand-ink)' }}>
             Launch app
           </Link>
+          <WalletButton />
         </nav>
         <details className="menu" ref={menu}>
           <summary aria-label="Open menu">Menu</summary>
@@ -40,6 +42,9 @@ export function Header() {
                 {item.label}
               </Link>
             ))}
+            <div style={{ padding: '8px 16px', borderTop: '1px solid var(--border)' }}>
+              <WalletButton />
+            </div>
           </div>
         </details>
       </div>
