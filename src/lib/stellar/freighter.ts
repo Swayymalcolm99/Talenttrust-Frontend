@@ -1,79 +1,53 @@
-import {
-  isConnected,
-  getAddress,
-  getNetwork,
-  requestAccess,
-  signTransaction,
-  isAllowed,
-} from '@stellar/freighter-api';
-
 /**
- * Check if Freighter extension is installed.
- * Returns false during SSR.
+ * Minimal adapter over @stellar/freighter-api.
+ * Keeps a stable interface whether Freighter is installed or not.
  */
-export async function isInstalled(): Promise<boolean> {
-  if (typeof window === 'undefined') return false;
-  const result = await isConnected();
-  return result.isConnected;
+
+let _freighter: typeof import('@stellar/freighter-api') | null = null;
+async function freighter() {
+  if (!_freighter) {
+    _freighter = await import('@stellar/freighter-api');
+  }
+  return _freighter;
 }
 
-/**
- * Get the user's Stellar address.
- * Returns empty string if not authorized or not installed.
- */
-export async function getAddressSafe(): Promise<string> {
-  if (typeof window === 'undefined') return '';
-  const result = await getAddress();
-  return result.address || '';
+/** Returns the connected Stellar public key, or null if not connected. */
+export async function getAddress(): Promise<string | null> {
+  try {
+    const f = await freighter();
+    const result = await f.getAddress();
+    return (result as { address: string }).address ?? (result as unknown as string) ?? null;
+  } catch {
+    return null;
+  }
 }
 
-/**
- * Get the network passphrase from Freighter.
- * Returns empty string if not available.
- */
+/** Returns the network passphrase for the current Freighter network. */
 export async function getNetworkPassphrase(): Promise<string> {
-  if (typeof window === 'undefined') return '';
-  const result = await getNetwork();
-  return result.networkPassphrase || '';
+  try {
+    const f = await freighter();
+    const result = await f.getNetworkDetails();
+    return result.networkPassphrase;
+  } catch {
+    return 'Test SDF Network ; September 2015';
+  }
 }
 
 /**
- * Request access to the user's wallet.
- * Prompts the user to authorize the app and returns their address.
+ * Signs a base64-encoded XDR transaction envelope.
+ * Throws with a human-readable message on wallet rejection.
  */
-export async function requestAccessSafe(): Promise<{ address: string; error?: string }> {
-  if (typeof window === 'undefined') {
-    return { address: '', error: 'SSR: window not available' };
-  }
-  const result = await requestAccess();
-  if (result.error) {
-    return { address: '', error: result.error.message };
-  }
-  return { address: result.address };
-}
-
-/**
- * Sign a transaction with Freighter.
- */
-export async function signTransactionSafe(
+export async function signTransaction(
   xdr: string,
-  opts?: { networkPassphrase?: string }
-): Promise<{ signedXdr: string; error?: string }> {
-  if (typeof window === 'undefined') {
-    return { signedXdr: '', error: 'SSR: window not available' };
-  }
-  const result = await signTransaction(xdr, opts);
-  if (result.error) {
-    return { signedXdr: '', error: result.error.message };
-  }
-  return { signedXdr: result.signedTxXdr };
-}
-
-/**
- * Check if the app is allowed to access the user's wallet.
- */
-export async function isAllowedSafe(): Promise<boolean> {
-  if (typeof window === 'undefined') return false;
-  const result = await isAllowed();
-  return result.isAllowed;
+  opts: { networkPassphrase: string; address?: string }
+): Promise<string> {
+  const f = await freighter();
+  const result = await f.signTransaction(xdr, {
+    networkPassphrase: opts.networkPassphrase,
+    address: opts.address,
+  });
+  const signed =
+    (result as { signedTxXdr: string }).signedTxXdr ?? (result as unknown as string);
+  if (!signed) throw new Error('Freighter returned an empty signed transaction.');
+  return signed;
 }

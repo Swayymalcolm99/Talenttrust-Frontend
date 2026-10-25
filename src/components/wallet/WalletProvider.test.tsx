@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { WalletProvider, useWallet } from './WalletProvider';
-import * as freighter from '@/lib/stellar/freighter';
+import * as freighter from '@/lib/stellar/freighterWallet';
 import * as network from '@/lib/stellar/network';
 
-vi.mock('@/lib/stellar/freighter');
+vi.mock('@/lib/stellar/freighterWallet');
 vi.mock('@/lib/stellar/network');
 
 describe('WalletProvider reducer', () => {

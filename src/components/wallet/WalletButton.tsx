@@ -1,12 +1,17 @@
 'use client';
 
 import { useRef, useState, useEffect } from 'react';
-import { useWallet } from './WalletProvider';
+import { useOptionalWallet, useWallet } from './WalletProvider';
 import { site } from '@/lib/site';
 
 const short = (a: string) => (a.length > 14 ? `${a.slice(0, 6)}...${a.slice(-4)}` : a);
 
+/** Renders nothing outside a WalletProvider (e.g. isolated component tests). */
 export function WalletButton() {
+  return useOptionalWallet() ? <WalletButtonMenu /> : null;
+}
+
+function WalletButtonMenu() {
   const { state, connect, disconnect } = useWallet();
   const [isOpen, setIsOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);

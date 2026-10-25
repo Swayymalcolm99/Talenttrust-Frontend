@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useReducer, ReactNode } from 'react';
-import { isInstalled, getAddressSafe, getNetworkPassphrase, requestAccessSafe, isAllowedSafe } from '@/lib/stellar/freighter';
+import { isInstalled, getAddressSafe, getNetworkPassphrase, requestAccessSafe, isAllowedSafe } from '@/lib/stellar/freighterWallet';
 import { expectedPassphrase } from '@/lib/stellar/network';
 
 type WalletState =
@@ -167,6 +167,11 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       {children}
     </WalletContext.Provider>
   );
+}
+
+/** Like useWallet, but returns null when rendered outside a WalletProvider. */
+export function useOptionalWallet() {
+  return useContext(WalletContext) ?? null;
 }
 
 export function useWallet() {

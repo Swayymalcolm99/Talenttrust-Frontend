@@ -1,10 +1,15 @@
 'use client';
 
 import { useRef, useEffect } from 'react';
-import { useWallet } from './WalletProvider';
+import { useOptionalWallet, useWallet } from './WalletProvider';
 import { site } from '@/lib/site';
 
+/** Renders nothing outside a WalletProvider. */
 export function NetworkGuard() {
+  return useOptionalWallet() ? <NetworkGuardBanner /> : null;
+}
+
+function NetworkGuardBanner() {
   const { state } = useWallet();
   const hasAnnounced = useRef(false);
 

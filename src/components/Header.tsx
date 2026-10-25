@@ -4,8 +4,11 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 import nav from '@/lib/nav.json';
-import { WalletButton } from './wallet/WalletButton';
 import { useDisclosure } from '@/hooks/useDisclosure';
+import { WalletButton } from '@/components/wallet/WalletButton';
+import { CommandPalette } from '@/components/palette/CommandPalette';
+import { ThemeToggle } from '@/components/ThemeToggle';
+import { NotificationBell } from '@/components/NotificationBell';
 
 export function Header() {
   const pathname = usePathname();
@@ -70,6 +73,7 @@ export function Header() {
               {item.label}
             </Link>
           ))}
+          <CommandPalette />
           <Link
             href="/contracts"
             className="btn btn-primary btn-sm"
@@ -78,20 +82,11 @@ export function Header() {
             Launch app
           </Link>
           <WalletButton />
+          <ThemeToggle />
         </nav>
-        <details className="menu" ref={menu}>
-          <summary aria-label="Open menu">Menu</summary>
-          <div className="menu-panel">
-            {nav.map((item) => (
-              <Link key={item.href} href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
-                {item.label}
-              </Link>
-            ))}
-            <div style={{ padding: '8px 16px', borderTop: '1px solid var(--border)' }}>
-              <WalletButton />
-            </div>
-          </div>
-        </details>
+        <div className="header-actions">
+          <NotificationBell />
+        </div>
 
         {/* Mobile trigger */}
         <button
@@ -135,6 +130,12 @@ export function Header() {
         >
           Launch app
         </Link>
+        <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)' }}>
+          <WalletButton />
+        </div>
+        <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)' }}>
+          <ThemeToggle />
+        </div>
       </nav>
 
       {/* Backdrop — closes the panel on tap/click */}
